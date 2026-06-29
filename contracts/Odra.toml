@@ -1,0 +1,2 @@
+[[contracts]]
+fqn = "arbiter_contracts::arbiter_settlement::ArbiterSettlement"

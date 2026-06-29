@@ -1,0 +1,17 @@
+{
+  "market_id": 0,
+  "proof_ref": "x402:rcpt_35bb5efd4a6948d5",
+  "receipt": {
+    "id": "x402:rcpt_35bb5efd4a6948d5",
+    "scheme": "x402-demo",
+    "network": "casper-test",
+    "amount": "1000000",
+    "payer": "016b39be9925e97c04285d854de461454d33a54792a517606759d634ff1cf8225b",
+    "pay_to": "account-hash-250c23eccc0d8765b8485fcc6812041d9c86de5191e4fd64ffdca33d2abe2fec",
+    "resource": "http://localhost:4020/outcomes/0",
+    "payment_hash": "acac87d6468756378b8b09782d3e358be5ba01f3d87bcc0ead3c830c42f9f4ac",
+    "created_at": "2026-06-27T16:24:30.848Z"
+  },
+  "submit_resolution_tx": "1bfb353ffd9440f2e06fdbc86639c15804d3db1865c2f3f7db6ea7eb7b55443c",
+  "settle_tx": "3b75366a3d15e20b069e4b1df39450f03ddf38a6d9829c4930ba416f37d6a83c"
+}

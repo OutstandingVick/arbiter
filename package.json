@@ -1,0 +1,13 @@
+{
+  "name": "arbiter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "truth": "node truth-endpoint/server.mjs",
+    "agent": "node agent/index.mjs",
+    "web": "node web/server.mjs",
+    "demo:dry-run": "ARBITER_DRY_RUN=1 node agent/index.mjs",
+    "check": "node scripts/check.mjs"
+  }
+}

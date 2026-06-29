@@ -1,0 +1,554 @@
+{
+  "casper_contract_schema_version": 1,
+  "toolchain": "rustc 1.94.0-nightly (8d670b93d 2025-12-31)",
+  "authors": [],
+  "repository": null,
+  "homepage": null,
+  "contract_name": "ArbiterSettlement",
+  "contract_version": "0.1.0",
+  "types": [
+    {
+      "struct": {
+        "name": "Claimed",
+        "description": null,
+        "members": [
+          {
+            "name": "market_id",
+            "description": null,
+            "ty": "U64"
+          },
+          {
+            "name": "staker",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U512"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "Market",
+        "description": null,
+        "members": [
+          {
+            "name": "status",
+            "description": null,
+            "ty": "MarketStatus"
+          },
+          {
+            "name": "close_time",
+            "description": null,
+            "ty": "U64"
+          },
+          {
+            "name": "winning_side",
+            "description": null,
+            "ty": "U8"
+          },
+          {
+            "name": "proof_ref",
+            "description": null,
+            "ty": "String"
+          },
+          {
+            "name": "total_pool",
+            "description": null,
+            "ty": "U512"
+          },
+          {
+            "name": "winning_pool",
+            "description": null,
+            "ty": "U512"
+          },
+          {
+            "name": "payout_pool",
+            "description": null,
+            "ty": "U512"
+          },
+          {
+            "name": "rake",
+            "description": null,
+            "ty": "U512"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "MarketCreated",
+        "description": null,
+        "members": [
+          {
+            "name": "market_id",
+            "description": null,
+            "ty": "U64"
+          },
+          {
+            "name": "close_time",
+            "description": null,
+            "ty": "U64"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "Resolved",
+        "description": null,
+        "members": [
+          {
+            "name": "market_id",
+            "description": null,
+            "ty": "U64"
+          },
+          {
+            "name": "winning_side",
+            "description": null,
+            "ty": "U8"
+          },
+          {
+            "name": "proof_ref",
+            "description": null,
+            "ty": "String"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "Settled",
+        "description": null,
+        "members": [
+          {
+            "name": "market_id",
+            "description": null,
+            "ty": "U64"
+          },
+          {
+            "name": "winning_side",
+            "description": null,
+            "ty": "U8"
+          },
+          {
+            "name": "total_pool",
+            "description": null,
+            "ty": "U512"
+          },
+          {
+            "name": "payout_pool",
+            "description": null,
+            "ty": "U512"
+          },
+          {
+            "name": "rake",
+            "description": null,
+            "ty": "U512"
+          },
+          {
+            "name": "proof_ref",
+            "description": null,
+            "ty": "String"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "Staked",
+        "description": null,
+        "members": [
+          {
+            "name": "market_id",
+            "description": null,
+            "ty": "U64"
+          },
+          {
+            "name": "side",
+            "description": null,
+            "ty": "U8"
+          },
+          {
+            "name": "staker",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U512"
+          }
+        ]
+      }
+    },
+    {
+      "enum": {
+        "name": "MarketStatus",
+        "description": null,
+        "variants": [
+          {
+            "name": "Open",
+            "description": null,
+            "discriminant": 0,
+            "ty": "Unit"
+          },
+          {
+            "name": "Resolved",
+            "description": null,
+            "discriminant": 1,
+            "ty": "Unit"
+          },
+          {
+            "name": "Settled",
+            "description": null,
+            "discriminant": 2,
+            "ty": "Unit"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "name": "InvalidRake",
+      "description": "Rake basis points out of range.",
+      "discriminant": 40008
+    },
+    {
+      "name": "MarketNotFound",
+      "description": "Market id does not exist.",
+      "discriminant": 40001
+    },
+    {
+      "name": "MarketNotOpen",
+      "description": "Market is not open for this action.",
+      "discriminant": 40002
+    },
+    {
+      "name": "MarketNotResolved",
+      "description": "Market has not been resolved yet.",
+      "discriminant": 40005
+    },
+    {
+      "name": "MarketNotSettled",
+      "description": "Market has not been settled yet.",
+      "discriminant": 40006
+    },
+    {
+      "name": "NothingToClaim",
+      "description": "Nothing available to claim.",
+      "discriminant": 40007
+    },
+    {
+      "name": "StakingClosed",
+      "description": "Staking window has closed.",
+      "discriminant": 40003
+    },
+    {
+      "name": "Unauthorized",
+      "description": "Caller is not authorised for this action.",
+      "discriminant": 40000
+    },
+    {
+      "name": "ZeroStake",
+      "description": "Stake amount must be greater than zero.",
+      "discriminant": 40004
+    }
+  ],
+  "entry_points": [
+    {
+      "name": "create_market",
+      "description": "Open a new market. Admin only. Returns the new market id.",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "close_time",
+          "description": null,
+          "ty": "U64",
+          "optional": false
+        }
+      ],
+      "return_ty": "U64",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "stake",
+      "description": "Stake the attached CSPR on `side` of `market_id`.",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "market_id",
+          "description": null,
+          "ty": "U64",
+          "optional": false
+        },
+        {
+          "name": "side",
+          "description": null,
+          "ty": "U8",
+          "optional": false
+        },
+        {
+          "name": "__cargo_purse",
+          "description": null,
+          "ty": "URef",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "submit_resolution",
+      "description": "Submit the resolved outcome. Resolver only.",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "market_id",
+          "description": null,
+          "ty": "U64",
+          "optional": false
+        },
+        {
+          "name": "winning_side",
+          "description": null,
+          "ty": "U8",
+          "optional": false
+        },
+        {
+          "name": "proof_ref",
+          "description": null,
+          "ty": "String",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "settle",
+      "description": "Snapshot pools, take rake, and open claims. Resolver only.",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "market_id",
+          "description": null,
+          "ty": "U64",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "claim",
+      "description": "Claim winnings for a winning-side stake. Callable once per staker.",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "market_id",
+          "description": null,
+          "ty": "U64",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "set_resolver",
+      "description": "Rotate the resolver agent. Admin only.",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "resolver",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "get_market",
+      "description": "Returns the full market record.",
+      "is_mutable": false,
+      "arguments": [
+        {
+          "name": "market_id",
+          "description": null,
+          "ty": "U64",
+          "optional": false
+        }
+      ],
+      "return_ty": "Market",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "get_pool",
+      "description": "Returns the total staked on a given side.",
+      "is_mutable": false,
+      "arguments": [
+        {
+          "name": "market_id",
+          "description": null,
+          "ty": "U64",
+          "optional": false
+        },
+        {
+          "name": "side",
+          "description": null,
+          "ty": "U8",
+          "optional": false
+        }
+      ],
+      "return_ty": "U512",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "get_stake",
+      "description": "Returns a staker's stake on a given side.",
+      "is_mutable": false,
+      "arguments": [
+        {
+          "name": "market_id",
+          "description": null,
+          "ty": "U64",
+          "optional": false
+        },
+        {
+          "name": "side",
+          "description": null,
+          "ty": "U8",
+          "optional": false
+        },
+        {
+          "name": "staker",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "U512",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "get_total",
+      "description": "Returns the running total staked across all sides of a market.",
+      "is_mutable": false,
+      "arguments": [
+        {
+          "name": "market_id",
+          "description": null,
+          "ty": "U64",
+          "optional": false
+        }
+      ],
+      "return_ty": "U512",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "get_resolver",
+      "description": "Returns the current resolver agent.",
+      "is_mutable": false,
+      "arguments": [],
+      "return_ty": "Key",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "market_count",
+      "description": "Returns the number of markets created.",
+      "is_mutable": false,
+      "arguments": [],
+      "return_ty": "U64",
+      "is_contract_context": true,
+      "access": "public"
+    }
+  ],
+  "events": [
+    {
+      "name": "Claimed",
+      "ty": "Claimed"
+    },
+    {
+      "name": "MarketCreated",
+      "ty": "MarketCreated"
+    },
+    {
+      "name": "Resolved",
+      "ty": "Resolved"
+    },
+    {
+      "name": "Settled",
+      "ty": "Settled"
+    },
+    {
+      "name": "Staked",
+      "ty": "Staked"
+    }
+  ],
+  "call": {
+    "wasm_file_name": "ArbiterSettlement.wasm",
+    "description": "Initialise with the resolver agent, the treasury, and the rake.",
+    "arguments": [
+      {
+        "name": "odra_cfg_package_hash_key_name",
+        "description": "The arg name for the package hash key name.",
+        "ty": "String",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_allow_key_override",
+        "description": "If true and the key specified in odra_cfg_package_hash_key_name already exists, it will be overwritten.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_is_upgradable",
+        "description": "The arg name for the contract upgradeability setting.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_is_upgrade",
+        "description": "The arg name for telling the installer that the contract is being upgraded.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "resolver",
+        "description": null,
+        "ty": "Key",
+        "optional": false
+      },
+      {
+        "name": "treasury",
+        "description": null,
+        "ty": "Key",
+        "optional": false
+      },
+      {
+        "name": "rake_bps",
+        "description": null,
+        "ty": "U32",
+        "optional": false
+      }
+    ]
+  }
+}
