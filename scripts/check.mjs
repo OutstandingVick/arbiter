@@ -38,12 +38,16 @@ for (const file of [
   "contracts/wasm/ArbiterSettlement.wasm",
   "agent/proof-trail.latest.json",
   "SUBMISSION.md",
+  "docs/JUDGE_PACKET.md",
+  "docs/DEMO_SCRIPT.md",
+  "docs/EVIDENCE.md",
   "web/index.html"
 ]) {
   await checkExists(file);
 }
 
 const submission = await readFile(new URL("SUBMISSION.md", root), "utf8");
+const readme = await readFile(new URL("README.md", root), "utf8");
 const viewer = await readFile(new URL("web/index.html", root), "utf8");
 for (const value of [
   "73510503b81826ef4d2a78a9068888acc453a971c2eb325f493289816bf81a48",
@@ -53,6 +57,7 @@ for (const value of [
   "x402:rcpt_35bb5efd4a6948d5"
 ]) {
   assertIncludes("SUBMISSION.md", submission, value);
+  assertIncludes("README.md", readme, value);
   assertIncludes("web/index.html", viewer, value);
 }
 

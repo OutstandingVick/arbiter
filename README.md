@@ -15,6 +15,40 @@ Built for the **Casper Agentic Buildathon 2026** (Casper Innovation Track).
 
 ---
 
+## Judge quick path
+
+If you only have a few minutes, review these in order:
+
+1. **What it does:** Arbiter is an agent-run settlement workflow. It pays a
+   truth endpoint for a result, submits that result to a Casper testnet
+   contract, settles the market, and publishes the proof trail.
+2. **Proof it ran:** see [SUBMISSION.md](./SUBMISSION.md) for the deploy,
+   `create_market`, `submit_resolution`, and `settle` transaction links.
+3. **Visual walkthrough:** run `npm run web` and open the local proof viewer.
+4. **Demo script:** use [docs/DEMO_SCRIPT.md](./docs/DEMO_SCRIPT.md) for the
+   2-3 minute video walkthrough.
+5. **Requirement coverage:** see [docs/JUDGE_PACKET.md](./docs/JUDGE_PACKET.md)
+   for the submission audit and evidence checklist.
+
+Live Casper testnet proof:
+
+| Step | Evidence |
+|---|---|
+| Contract deployed | [`73510503...a48`](https://testnet.cspr.live/transaction/73510503b81826ef4d2a78a9068888acc453a971c2eb325f493289816bf81a48) |
+| Market created | [`b50fe93...0b6`](https://testnet.cspr.live/transaction/b50fe93cc706fab4ee5fd0c64884e524322c7b803d2eb4aca089e261b0a7a0b6) |
+| Agent submitted resolution | [`1bfb353...43c`](https://testnet.cspr.live/transaction/1bfb353ffd9440f2e06fdbc86639c15804d3db1865c2f3f7db6ea7eb7b55443c) |
+| Agent settled market | [`3b75366...83c`](https://testnet.cspr.live/transaction/3b75366a3d15e20b069e4b1df39450f03ddf38a6d9829c4930ba416f37d6a83c) |
+| Contract | [`contract-11ee...3f6`](https://testnet.cspr.live/contract/11ee76f57a0c9c119e340329b3b507619bd07948b4e488dafdc250a3ce7203f6) |
+| x402 proof reference | `x402:rcpt_35bb5efd4a6948d5` |
+
+**Current prototype honesty:** the truth endpoint implements an x402-shaped
+HTTP 402 challenge, signed payment header, receipt, nonce expiry, and replay
+protection for the demo. Replacing the local HMAC verifier with the unchanged
+Casper x402 facilitator is the next integration step and is tracked in
+[PRODUCTION_READINESS.md](./PRODUCTION_READINESS.md).
+
+---
+
 ## Why this, not another x402 primitive
 
 The buildathon field is crowded with x402 *infrastructure* — receipt
@@ -31,10 +65,10 @@ describes — one agent pays a service, acts on the result, and proves it.
 Keep these separate; conflating them is what makes the build hard.
 
 **Surface A — paying for truth (x402).** The agent calls the truth endpoint,
-receives `402`, signs, and pays. The Casper x402 Facilitator settles this in the
-CEP-18 x402 token. *We run the reference facilitator unchanged and fork the
-reference resource server into our truth endpoint.* (`make-software/casper-x402`,
-JS SDK under `js/`.)
+receives `402`, signs, and pays. In this submission, the endpoint uses an
+x402-compatible demo verifier with nonce expiry and replay protection so the
+agent loop can be run deterministically. The production integration path is to
+swap that verifier for the unchanged Casper x402 facilitator / CEP-18 flow.
 
 **Surface B — settling the obligation (this contract).** The `ArbiterSettlement`
 Odra contract escrows native CSPR, accepts the resolved outcome + an x402 proof
@@ -155,6 +189,18 @@ npm run truth
 npm run demo:dry-run
 npm run web
 ```
+
+Demo flow:
+
+1. Start the truth endpoint with `npm run truth`.
+2. In another terminal, run `npm run demo:dry-run` to show the agent receiving a
+   `402`, signing the payment payload, receiving a verified result, and printing
+   the proof receipt without spending testnet gas.
+3. Run `npm run web` and open the proof viewer to show the already completed
+   testnet deploy, market creation, resolution, settlement, contract hash, and
+   x402 receipt reference.
+4. For the live on-chain run, use `npm run agent` with a funded Casper testnet
+   key and the environment values in `.env.example`.
 
 The included tests cover the full happy path (stake → resolve → settle → claim,
 with rake and pro-rata math asserted to the mote), double-claim rejection, and
