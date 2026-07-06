@@ -41,6 +41,11 @@ for (const file of [
   "docs/JUDGE_PACKET.md",
   "docs/DEMO_SCRIPT.md",
   "docs/EVIDENCE.md",
+  "docs/screenshots/proof-viewer.png",
+  "docs/screenshots/agent-dry-run.png",
+  "docs/screenshots/cspr-deploy.png",
+  "docs/screenshots/cspr-resolution.png",
+  "docs/screenshots/cspr-settlement.png",
   "web/index.html"
 ]) {
   await checkExists(file);

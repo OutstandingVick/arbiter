@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#0b1110;color:#d8f5dc;font:18px Menlo,Monaco,Consolas,monospace}.term{padding:32px}.bar{height:34px;background:#151d1b;border-bottom:1px solid #294037}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin:11px 0 0 10px}.r{background:#ff5f57}.y{background:#ffbd2e}.g{background:#28c840}pre{white-space:pre-wrap;line-height:1.45}</style></head><body><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div><div class="term"><pre>
+&gt; arbiter@0.1.0 demo:dry-run
+&gt; ARBITER_DRY_RUN=1 node agent/index.mjs
+
+Arbiter agent starting
+market_id=0
+truth_endpoint=http://localhost:4020
+dry_run=true
+Paid truth endpoint over x402-style flow
+outcome=HOME winning_side=0
+proof_ref=x402:rcpt_02a46c0fcc374bea
+Dry run enabled; skipping Casper submit_resolution and settle.
+{
+  "outcome": {
+    "market_id": 0,
+    "winning_side": 0,
+    "fixture": "Arbiter Demo FC vs Proof United",
+    "result": "HOME",
+    "source": "demo-oracle",
+    "resolved_at": "2026-06-27T15:35:21.000Z",
+    "proof_ref": "x402:rcpt_02a46c0fcc374bea",
+    "receipt": {
+      "id": "x402:rcpt_02a46c0fcc374bea",
+      "scheme": "x402-demo",
+      "network": "casper-test",
+      "amount": "1000000",
+      "payer": "016b39be9925e97c04285d854de461454d33a54792a517606759d634ff1cf8225b",
+      "pay_to": "account-hash-250c23eccc0d8765b8485fcc6812041d9c86de5191e4fd64ffdca33d2abe2fec",
+      "resource": "http://localhost:4020/outcomes/0",
+      "payment_hash": "49303f8411f0948c595fc597ab83bb501145b917e3fd1ec67ffb103047eaf08b",
+      "created_at": "2026-07-06T16:04:02.734Z"
+    }
+  }
+}
+</pre></div></body></html>

@@ -59,13 +59,19 @@ npm run web
 
 Then open the proof viewer and CSPR.live links.
 
-## Screenshots To Capture
+## Screenshots
 
-Create these before submitting the final DoraHacks form:
+These are included for the final DoraHacks form:
 
-- `docs/screenshots/proof-viewer.png`
-- `docs/screenshots/agent-dry-run.png`
-- `docs/screenshots/cspr-deploy.png`
-- `docs/screenshots/cspr-resolution.png`
-- `docs/screenshots/cspr-settlement.png`
+| Screenshot | Notes |
+|---|---|
+| `docs/screenshots/proof-viewer.png` | Local proof viewer with deploy, market, resolution, settlement, contract hash, and proof ref. |
+| `docs/screenshots/agent-dry-run.png` | Terminal-style dry run showing 402 payment, receipt, outcome, and proof ref. |
+| `docs/screenshots/cspr-deploy.png` | Deploy evidence card with the public CSPR.live URL, deploy tx, package hash, and contract hash. |
+| `docs/screenshots/cspr-resolution.png` | Direct CSPR.live capture of successful `submit_resolution`. |
+| `docs/screenshots/cspr-settlement.png` | Direct CSPR.live capture of successful `settle`. |
 
+The CSPR.live deploy transaction route intermittently renders a loading shell in
+headless Chrome. The deploy evidence card preserves the exact public hash and
+URL, while the resolution and settlement screenshots are direct explorer
+captures.
