@@ -75,47 +75,7 @@ Odra contract escrows native CSPR, accepts the resolved outcome + an x402 proof
 reference from the agent, takes a rake, and pays winners pro-rata. This is the
 only bespoke contract.
 
-```mermaid
-flowchart LR
-  subgraph Market["Parimutuel market"]
-    UserA["Staker A<br/>backs HOME"]
-    UserB["Staker B<br/>backs AWAY"]
-    Pool["CSPR escrow pool<br/>market_id: 0"]
-    UserA -->|stake CSPR| Pool
-    UserB -->|stake CSPR| Pool
-  end
-
-  subgraph SurfaceA["Surface A: paid truth"]
-    Agent["Arbiter agent<br/>perceive -> pay -> reason"]
-    Truth["Truth endpoint<br/>HTTP 402 challenge"]
-    Receipt["x402 receipt<br/>proof_ref"]
-    Agent -->|request result| Truth
-    Truth -->|payment required| Agent
-    Agent -->|signed payment header| Truth
-    Truth -->|verified outcome + receipt| Receipt
-    Receipt --> Agent
-  end
-
-  subgraph SurfaceB["Surface B: Casper settlement"]
-    Contract["ArbiterSettlement<br/>Odra contract"]
-    Settle["Resolved + settled<br/>rake applied"]
-    Claims["Winner claims<br/>pro-rata payout"]
-    Pool --> Contract
-    Agent -->|submit_resolution(proof_ref)| Contract
-    Agent -->|settle(market_id)| Contract
-    Contract --> Settle
-    Settle --> Claims
-  end
-
-  subgraph Proof["Public proof trail"]
-    Viewer["Proof viewer"]
-    Explorer["CSPR.live transactions"]
-  end
-
-  Contract -->|events + hashes| Explorer
-  Receipt -->|receipt id| Viewer
-  Explorer --> Viewer
-```
+![Arbiter architecture diagram](./docs/assets/architecture.svg)
 
 | Step | What the judge should see |
 |---|---|

@@ -41,6 +41,7 @@ for (const file of [
   "docs/JUDGE_PACKET.md",
   "docs/DEMO_SCRIPT.md",
   "docs/EVIDENCE.md",
+  "docs/assets/architecture.svg",
   "docs/screenshots/proof-viewer.png",
   "docs/screenshots/agent-dry-run.png",
   "docs/screenshots/cspr-deploy.png",
