@@ -75,14 +75,55 @@ Odra contract escrows native CSPR, accepts the resolved outcome + an x402 proof
 reference from the agent, takes a rake, and pays winners pro-rata. This is the
 only bespoke contract.
 
+```mermaid
+flowchart LR
+  subgraph Market["Parimutuel market"]
+    UserA["Staker A<br/>backs HOME"]
+    UserB["Staker B<br/>backs AWAY"]
+    Pool["CSPR escrow pool<br/>market_id: 0"]
+    UserA -->|stake CSPR| Pool
+    UserB -->|stake CSPR| Pool
+  end
+
+  subgraph SurfaceA["Surface A: paid truth"]
+    Agent["Arbiter agent<br/>perceive -> pay -> reason"]
+    Truth["Truth endpoint<br/>HTTP 402 challenge"]
+    Receipt["x402 receipt<br/>proof_ref"]
+    Agent -->|request result| Truth
+    Truth -->|payment required| Agent
+    Agent -->|signed payment header| Truth
+    Truth -->|verified outcome + receipt| Receipt
+    Receipt --> Agent
+  end
+
+  subgraph SurfaceB["Surface B: Casper settlement"]
+    Contract["ArbiterSettlement<br/>Odra contract"]
+    Settle["Resolved + settled<br/>rake applied"]
+    Claims["Winner claims<br/>pro-rata payout"]
+    Pool --> Contract
+    Agent -->|submit_resolution(proof_ref)| Contract
+    Agent -->|settle(market_id)| Contract
+    Contract --> Settle
+    Settle --> Claims
+  end
+
+  subgraph Proof["Public proof trail"]
+    Viewer["Proof viewer"]
+    Explorer["CSPR.live transactions"]
+  end
+
+  Contract -->|events + hashes| Explorer
+  Receipt -->|receipt id| Viewer
+  Explorer --> Viewer
 ```
-        ARBITER AGENT  (perceive → pay x402 → reason → settle → prove)
-              │ pays for outcome (Surface A)        │ submits resolution + settles (Surface B)
-              ▼                                      ▼
-     TRUTH ENDPOINT (x402 server)          ArbiterSettlement (Odra, this repo)
-              │                                      │
-   x402 FACILITATOR (reference, CEP-18)     CASPER TESTNET + CSPR.cloud events
-```
+
+| Step | What the judge should see |
+|---|---|
+| 1. Stake | CSPR is escrowed in the `ArbiterSettlement` market pool. |
+| 2. Pay for truth | The agent receives an HTTP `402`, signs payment, and receives an x402 proof reference. |
+| 3. Resolve | The agent submits the winning side plus `proof_ref` to Casper. |
+| 4. Settle | The contract snapshots pools, applies rake, and opens winner claims. |
+| 5. Prove | The proof viewer links receipt id, contract hash, and public CSPR.live transactions. |
 
 ---
 
