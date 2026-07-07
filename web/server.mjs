@@ -20,8 +20,12 @@ createServer(async (req, res) => {
       ? "text/css"
       : file.endsWith(".js")
         ? "application/javascript"
-        : "text/html";
-    res.writeHead(200, { "content-type": `${type}; charset=utf-8` });
+        : file.endsWith(".png")
+          ? "image/png"
+          : "text/html";
+    res.writeHead(200, {
+      "content-type": type.startsWith("image/") ? type : `${type}; charset=utf-8`
+    });
     res.end(body);
   } catch {
     res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });

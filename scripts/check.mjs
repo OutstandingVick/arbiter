@@ -46,7 +46,9 @@ for (const file of [
   "docs/screenshots/cspr-deploy.png",
   "docs/screenshots/cspr-resolution.png",
   "docs/screenshots/cspr-settlement.png",
-  "web/index.html"
+  "web/index.html",
+  "web/assets/agent-dry-run.png",
+  "web/assets/cspr-resolution.png"
 ]) {
   await checkExists(file);
 }
